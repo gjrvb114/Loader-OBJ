@@ -1,5 +1,3 @@
-#include <Windows.h>
-
 #include "Objet.h"
 
 //variables utiles pour bouger l'objet
@@ -26,7 +24,7 @@ GLvoid souris(int bouton, int etat, int x, int y);
 GLvoid mouvement(int x, int y);
 GLvoid affichage();
 
-int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
     // Initialisation
 	glutInit(&argc, argv);
@@ -37,9 +35,8 @@ int main(int argc, char *argv[])
 	glClearColor(0.0f,0.0f,0.0f,0.0f);
 	glEnable(GL_DEPTH_TEST);
 
-
 	// Stockage des données dans objet
-    objet.stockerDonnees();
+    objet.stockerDonnees("Monkey.obj");
 
 	// Définition des callbacks
 	glutDisplayFunc(affichage);
@@ -56,7 +53,7 @@ GLvoid affichage()
 {
     // Nettoyage des buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+	
     // Dessin de l'objet
 	objet.dessinerObjet();
 

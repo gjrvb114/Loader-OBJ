@@ -1,32 +1,17 @@
 #pragma once
 
-#include <vector>
+#include "includes.h"
 
 #include "Point3D.h"
+#include "Point2D.h"
+#include "indices.h"
 
-struct point2D
-{
-	GLdouble x;
-	GLdouble y;
-	point2D():x(0), y(0){}
-	point2D(std::ifstream& fichier){fichier >> x >> y;}
-};
-
-struct indices
-{
-	GLint v;
-	GLint vt;
-	GLint vn;
-	indices():v(0), vt(0), vn(0){}
-	indices(std::ifstream& fichier){fichier >> v >> vt >> vn;}
-};
-
+//contient la définition de l'objet et de la caméra
 class Objet
 {
     public:
-        Objet(){}
-        void lireFace(const std::string& str_face);
-        void stockerDonnees();
+		Objet(){}
+        void stockerDonnees(const std::string& chemin_fichier_obj);
         void dessinerObjet();
         void definitionCamera(const int& w,const int& h);
         void rotation(const GLdouble& angleX, const GLdouble& angleY);
@@ -40,6 +25,9 @@ class Objet
         GLdouble zNear;
         GLdouble zFar;
         Point3D camPos;
+		
+		void lireFace(const std::string& str_face);
+		void lireFace(std::ifstream& fichier);
 };
 
 int reecrire_face(std::string & face);

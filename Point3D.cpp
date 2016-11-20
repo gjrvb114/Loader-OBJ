@@ -9,22 +9,6 @@ Point3D::Point3D(const GLdouble& _x, const GLdouble& _y, const GLdouble& _z):
 {
 }
 
-Point3D::Point3D(std::string& ligne)
-{
-    //va nous servir à sous-couper les string aux bons endroits
-	size_t st;
-
-    //on récupère x avec stod
-    x = std::stod(ligne, &st);
-    //on enlève ce qu'on a pris
-    ligne = ligne.substr(st);
-
-    //même principe avec y et z
-    y = std::stod(ligne, &st);
-    ligne = ligne.substr(st);
-    z= std::stod(ligne, &st);
-}
-
 Point3D::Point3D(std::ifstream& fichier)
 {
     fichier >> x >> y >> z;

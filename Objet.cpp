@@ -1,64 +1,58 @@
 #include "Objet.h"
 
-void Objet::lireFace(const std::string& str_face)
+//fonction de lecture d'une face
+void Objet::lireFace(std::ifstream& fichier)
 {
-    // "cas" stocke l'état en cours c'est-à-dire :
-    // 0 : v
-    // 1 : vt
-    // 2 : vn
-    int cas = 0;
-
-    //la position dans le string
-    unsigned int i = 0;
-
-    //l'entier courant
-    std::string entierCourant = "0";
-
-    indices defPoint;
-
-    while(i<str_face.size())
-    {
-        if(str_face[i]!=' ')
+	//contient l'indice d'un v, vt ou vn
+	int entierCourant(0);
+	//permet de se situer dans la définition d'un point
+	//0 -> v ; 1-> vt ; 2 -> vn 
+	int cas(0);
+	//la définition d'un point qu'on va ajouter à l'attribut faces
+	indices defPoint;
+	//la ligne de définition de la face
+	std::string ligne;
+	getline(fichier, ligne);
+	//indice de pacours de la ligne
+	unsigned int i(0);
+	while(i<ligne.size())
+	{
+		//S'il n'y a pas d'espace on est dans la définition d'un indice d'un point
+		if(ligne[i]!=' ')
         {
-            while(i<str_face.size() && str_face[i]!='/' && str_face[i]!=' ')
-            {
-                entierCourant += str_face[i];
+			//On reste dans cette définition jusque la fin, un / ou un espace
+			while(i<ligne.size() && ligne[i]!='/' && ligne[i]!=' ')
+            {  
+				entierCourant*=10;
+				entierCourant+=ligne[i]-'0';
                 i++;
             }
             switch(cas)
             {
                 case 0:
-                    defPoint.v = std::stoi(entierCourant);
+                    defPoint.setv(entierCourant);
                     break;
                 case 1:
-                    defPoint.vt = std::stoi(entierCourant);
+                    defPoint.setvt(entierCourant);
                     break;
                 case 2:
-                    defPoint.vn = std::stoi(entierCourant);
+                    defPoint.setvn(entierCourant);
                     faces.back().push_back(defPoint);
                     break;
             }
 
-            entierCourant = "0";
+            entierCourant = 0;
             cas = (cas+1)%3;
         }
-        i++;
-    }
+		i++;
+	}
 }
 
-void Objet::stockerDonnees()
-{
-    std::string nomFichier;
-	//choix du fichier OBJ à lire
-	/*
-	cout << "Veuillez entrer le nom du fichier OBJ a lire" << endl;
-	cin >> nomFichier;
-	*/
-	//nomFichier="C:\\Users\\Jimmy\\Desktop\\C++\\Loader OBJ\\cube.obj";
-	nomFichier="C:\\Users\\Jimmy\\Desktop\\C++\\Loader OBJ Guillaume\\Monkey.obj";
 
-    //ouverture du fichier
-	std::ifstream fichier(nomFichier, std::ios::in);
+void Objet::stockerDonnees(const std::string& chemin_fichier_obj)
+{
+	//ouverture du fichier
+	std::ifstream fichier(chemin_fichier_obj, std::ios::in);
 	if (!fichier)
 	{
 		std::cerr << std::endl << "Impossible d'ouvrir" << std::endl;
@@ -90,7 +84,7 @@ void Objet::stockerDonnees()
             str_courant = "_";
         }
     }
-
+	
     // Tant qu'on est pas à la fin du fichier
     while(!fichier.eof())
     {
@@ -113,8 +107,7 @@ void Objet::stockerDonnees()
         else if(str_courant=="f")
         {
             faces.push_back(vectorPoint);
-            std::getline(fichier, str_courant);
-			lireFace(str_courant);
+			lireFace(fichier);
         }
         str_courant = "_";
 
@@ -133,7 +126,8 @@ void Objet::stockerDonnees()
             }
         }
     }
-
+	
+	//définitions arbitraires des paramètres de la caméra
     Point3D tailleObjet(coordMax-coordMin);
     targetPos = Point3D((coordMin+coordMax)/2.0f);
     camPos = targetPos-Point3D(0.0f, tailleObjet.gety()/2.0f + tailleObjet.maxi()*2.0, 0.0f);
@@ -141,6 +135,7 @@ void Objet::stockerDonnees()
     zFar = zNear + 2*tailleObjet.maxi();
 }
 
+//dessin de l'objet 3D
 void Objet::dessinerObjet()
 {
     for(int i=0; i<(int)faces.size(); i++)
@@ -148,13 +143,14 @@ void Objet::dessinerObjet()
         glBegin(GL_POLYGON);
         for(int j=0; j<(int)faces[i].size(); j++)
         {
-            glNormal3f(normales[faces[i][j].vn-1].getx(), normales[faces[i][j].vn-1].gety(), normales[faces[i][j].vn-1].getz());
-            glVertex3f(vertices[faces[i][j].v-1].getx(), vertices[faces[i][j].v-1].gety(), vertices[faces[i][j].v-1].getz());
+            glNormal3f(normales[faces[i][j].getvn()-1].getx(), normales[faces[i][j].getvn()-1].gety(), normales[faces[i][j].getvn()-1].getz());
+            glVertex3f(vertices[faces[i][j].getv()-1].getx(), vertices[faces[i][j].getv()-1].gety(), vertices[faces[i][j].getv()-1].getz());
         }
         glEnd();
     }
 }
 
+//rotation de l'objet de angleX et angleY
 void Objet::rotation(const GLdouble& angleX, const GLdouble& angleY)
 {
     glTranslatef(targetPos.getx(), targetPos.gety(), targetPos.getz());
@@ -163,39 +159,11 @@ void Objet::rotation(const GLdouble& angleX, const GLdouble& angleY)
 	glTranslatef(-targetPos.getx(), -targetPos.gety(), -targetPos.getz());
 }
 
-void Objet::definitionCamera(const int& w,const int& h)
+//Définition de la caméra
+void Objet::definitionCamera(const int& w, const int& h)
 {
     gluPerspective(90.0f , w/(h*1.0f) , zNear , zFar);
 	gluLookAt(camPos.getx(), camPos.gety(), camPos.getz(),
            targetPos.getx(), targetPos.gety(), targetPos.getz(),
            0.0f, 0.0f, 1.0f);
-}
-
-
-
-int reecrire_face(std::string & face)
-{
-    //on va renvoyer le nombre de point de la face
-	int nb_point = 0;
-	std::string s;
-	int n = face.length();
-	for(int i=0; i<n ;i++)
-	{
-		if (face[i]=='/' && s.back()==' ')
-		{
-			nb_point++;
-			s.append("0 ");
-		}
-		else if(face[i]=='/')
-		{
-			nb_point++;
-			s.push_back(' ');
-		}
-		else
-		{
-			s.push_back(face[i]);
-		}
-	}
-	face = s;
-	return nb_point/2;
 }
