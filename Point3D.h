@@ -8,7 +8,7 @@ class Point3D
         Point3D();
         Point3D(const GLdouble& _x, const GLdouble& _y, const GLdouble& _z);
         Point3D(const Point3D& p);
-        Point3D(std::ifstream& fichier);
+        Point3D(std::ifstream* fichier);
         Point3D minimum(const Point3D& p) const;
         Point3D maximum(const Point3D& p) const;
         GLdouble getx() const{return x;}

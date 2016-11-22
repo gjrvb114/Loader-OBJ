@@ -9,9 +9,9 @@ Point3D::Point3D(const GLdouble& _x, const GLdouble& _y, const GLdouble& _z):
 {
 }
 
-Point3D::Point3D(std::ifstream& fichier)
+Point3D::Point3D(std::ifstream* fichier)
 {
-    fichier >> x >> y >> z;
+    *fichier >> x >> y >> z;
 }
 
 Point3D::Point3D(const Point3D& p)

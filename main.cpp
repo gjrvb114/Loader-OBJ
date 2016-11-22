@@ -1,4 +1,5 @@
-#include "Objet.h"
+#include "includes.h"
+#include "Loader.h"
 
 //variables utiles pour bouger l'objet
 const GLdouble pasRotation = 0.866f;
@@ -14,8 +15,8 @@ GLint oldYRot = 0;
 GLint oldXTrans = 0;
 GLint oldYTrans = 0;
 
-//notre objet qui va tout contenir
-Objet objet;
+//notre loader qui contient la caméra et l'objet3D
+Loader loader;
 
 //déclaration des callbacks
 GLvoid clavier(unsigned char touche, GLint x, GLint y);
@@ -36,7 +37,7 @@ int main(int argc, char **argv)
 	glEnable(GL_DEPTH_TEST);
 
 	// Stockage des données dans objet
-    objet.stockerDonnees("Monkey.obj");
+    loader.stockerDonnees("Monkey.obj");
 
 	// Définition des callbacks
 	glutDisplayFunc(affichage);
@@ -55,13 +56,13 @@ GLvoid affichage()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
     // Dessin de l'objet
-	objet.dessinerObjet();
+	loader.dessiner();
 
     // On applique la rotation et la translation à l'objet
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glTranslatef(transX, 0, -transY);
-	objet.rotation(angleX, angleY);
+	loader.rotation(angleX, angleY);
 
 	glFlush();
 }
@@ -71,7 +72,7 @@ GLvoid redimensionner(int w, int h)
     //matrice de projection et viewport
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	objet.definitionCamera(w, h);
+	loader.redefinitionFrustum(w, h);
 	glViewport(0, 0, w, h);
 }
 

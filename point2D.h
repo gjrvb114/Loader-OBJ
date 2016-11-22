@@ -2,11 +2,11 @@
 
 #include "includes.h"
 
-class point2D{
+class Point2D{
 	private:
 		GLdouble x;
 		GLdouble y;
 	public:	
-		point2D():x(0), y(0){}
-		point2D(std::ifstream& fichier){fichier >> x >> y;}
+		Point2D():x(0), y(0){}
+		Point2D(std::ifstream* fichier){*fichier >> x >> y;}
 };
