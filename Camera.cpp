@@ -2,6 +2,7 @@
 
 void Camera::definitionCamera(const Point3D& coordMin, const Point3D& coordMax)
 {
+	//on définit le frustum de vue à partir des coordonnées extrêmes de l'objet 3D
 	Point3D tailleObjet(coordMax-coordMin);
     targetPos = Point3D((coordMin+coordMax)/2.0f);
     camPos = targetPos-Point3D(0.0f, tailleObjet.gety()/2.0f + tailleObjet.maxi()*2.0, 0.0f);

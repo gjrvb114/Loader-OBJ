@@ -34,9 +34,10 @@ void Loader::stockerDonnees(const std::string& chemin_fichier_obj)
         }
     }
 	
-    // Tant qu'on est pas à la fin du fichier
+    // Tant qu'on est pas à la fin du fichier, 
     while(!fichier.eof())
     {
+		//On ajoute le vertex, la texture, la normale ou la face
         if(str_courant=="v")
         {
             objet.addVertex(&fichier, &coordMin, &coordMax);
@@ -53,8 +54,9 @@ void Loader::stockerDonnees(const std::string& chemin_fichier_obj)
         {
 			objet.addFace(&fichier);
         }
+		
+		//puis on attend de retomber sur une ligne intéressante
         str_courant = "_";
-
         while(!fichier.eof() && str_courant!="v" && str_courant!="f" && str_courant!="vn")
         {
             //on ne lit un mot que si on est au début d'une ligne
@@ -73,7 +75,6 @@ void Loader::stockerDonnees(const std::string& chemin_fichier_obj)
 	
 	//définitions arbitraires des paramètres de la caméra
 	camera.definitionCamera(coordMin, coordMax);
-    
 }
 
 void Loader::dessiner()
